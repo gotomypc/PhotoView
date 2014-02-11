@@ -15,6 +15,16 @@
  *******************************************************************************/
 package uk.co.senab.photoview;
 
+import static android.view.MotionEvent.ACTION_CANCEL;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_UP;
+
+import java.lang.ref.WeakReference;
+
+import uk.co.senab.photoview.gestures.OnGestureListener;
+import uk.co.senab.photoview.gestures.VersionedGestureDetector;
+import uk.co.senab.photoview.log.LogManager;
+import uk.co.senab.photoview.scrollerproxy.ScrollerProxy;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Matrix.ScaleToFit;
@@ -32,17 +42,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-
-import java.lang.ref.WeakReference;
-
-import uk.co.senab.photoview.gestures.OnGestureListener;
-import uk.co.senab.photoview.gestures.VersionedGestureDetector;
-import uk.co.senab.photoview.log.LogManager;
-import uk.co.senab.photoview.scrollerproxy.ScrollerProxy;
-
-import static android.view.MotionEvent.ACTION_CANCEL;
-import static android.view.MotionEvent.ACTION_DOWN;
-import static android.view.MotionEvent.ACTION_UP;
 
 public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         OnGestureListener,
@@ -379,7 +378,8 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         if (mAllowParentInterceptOnEdge && !mScaleDragDetector.isScaling()) {
             if (mScrollEdge == EDGE_BOTH
                     || (mScrollEdge == EDGE_LEFT && dx >= 1f)
-                    || (mScrollEdge == EDGE_RIGHT && dx <= -1f)) {
+                    || (mScrollEdge == EDGE_RIGHT && dx <= -1f)) {              
+                
                 ViewParent parent = imageView.getParent();
                 if (null != parent)
                     parent.requestDisallowInterceptTouchEvent(false);
@@ -518,9 +518,11 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
                 handled = true;
             }
 
-            if (!handled && null != parent) {
-                parent.requestDisallowInterceptTouchEvent(false);
-            }
+            // We are not sure what the purpose of this is, but the scrolling appears to work fine without it. 
+//            if (!handled && null != parent) {
+//                parent.requestDisallowInterceptTouchEvent(false);
+//            }
+           
 
             // Finally, try the Scale/Drag detector
             if (null != mScaleDragDetector
